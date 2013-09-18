@@ -16,7 +16,7 @@
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 //  02111-1307, USA.
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <assert.h>
 #include <curses.h>
 #include <errno.h>
@@ -59,7 +59,11 @@ int str2int(const char* str, int* val)
 
 void print_joystick_info(int joy_idx, SDL_Joystick* joy)
 {
+#if SDL_VERSION_ATLEAST(2,0,0)
+  printf("Joystick Name:     '%s'\n", SDL_JoystickName(joy));
+#else
   printf("Joystick Name:     '%s'\n", SDL_JoystickName(joy_idx));
+#endif
   printf("Joystick Number:   %2d\n", joy_idx);
   printf("Number of Axes:    %2d\n", SDL_JoystickNumAxes(joy));
   printf("Number of Buttons: %2d\n", SDL_JoystickNumButtons(joy));
@@ -104,6 +108,10 @@ int main(int argc, char** argv)
   else
   {
     atexit(SDL_Quit);
+
+#if SDL_VERSION_ATLEAST(2,0,0)
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+#endif
 
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 ||
                       strcmp(argv[1], "-h") == 0))
@@ -223,7 +231,11 @@ int main(int argc, char** argv)
             //clear();
             move(0,0);
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+            printw("Joystick Name:   '%s'\n", SDL_JoystickName(joy));
+#else
             printw("Joystick Name:   '%s'\n", SDL_JoystickName(joy_idx));
+#endif
             printw("Joystick Number: %d\n", joy_idx);
             printw("\n");
 
